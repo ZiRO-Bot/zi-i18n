@@ -1,2 +1,2 @@
 <!example.text: "This is a test">
-<?example.func: "Unix time: {time}">
+<!example.test: "Test with function: {}">

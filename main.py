@@ -23,11 +23,10 @@ class I18n:
         for f in files:
             if f.endswith(self.suffix):
                 self.languages.append(f)
+        self.translation = {}
         self.change_lang(language)
 
     def fetch_translations(self):
-        # for f in files:
-        #     if f.endswith(".zi.lang") and f.startswith(self.lang):
         lang = self.lang
         if self.lang + self.suffix not in self.languages:
             import warnings
@@ -35,37 +34,49 @@ class I18n:
             warnings.warn(f"Language '{self.lang}' Not Found")
             lang = "en_US"
 
-        self.locale = []
+        self.locale = {}
         with open(f"{self.dir}/{lang}{self.suffix}", "r") as read:
-            self.locale += read.readlines()
+            if lang in self.locale:
+                self.locale[lang] += read.readlines()
+            else:
+                self.locale[lang] = read.readlines()
 
-        self.translation = {}
-        regex = r"<(.)(\S*): \"(.*)\">"
+        regex = r"^<(.)(\S*): \"(.*)\">"
 
         for i in self.locale:
-            try:
-                match = re.search(regex, i).groups()
-            except AttributeError:
-                continue
-            if match[1] not in self.translation:
-                self.translation[match[1]] = {"type": match[0], "result": match[2]}
+            for x in self.locale[i]:
+                try:
+                    match = re.search(regex, x).groups()
+                except AttributeError:
+                    continue
+                if match[1] not in self.translation:
+                    if i not in self.translation:
+                        self.translation[i] = {}
+                    self.translation[i][match[1]] = {"type": match[0], "result": match[2]}
 
     def change_lang(self, language: str):
         self.lang = language
         self.fetch_translations()
 
     def translate(self, text: str):
-        if text not in self.translation:
+        lang = self.lang
+        if lang not in self.translation:
             return text
-        t = self.translation[text]
+
+        if text not in list(self.translation[lang].keys()):
+            lang = "en_US"
+            
+        try:
+            t = self.translation[lang][text]
+        except KeyError:
+            return Translate(text, text)
+
         if t["type"] == "!":
             return Translate(text, t["result"])
-        return Translate(text, "")
+        return Translate(text, text)
 
 
-locale = I18n("locale", "en_US")
-print(locale.translate("example.text"))
-locale.change_lang("fr")
-print(locale.translate("example.text"))
-locale.change_lang("id_ID")
-print(locale.translate("example.text"))
+# locale = I18n("locale", "en_US")
+# print(locale.translate("example.text"))
+# locale.change_lang("id_ID")
+# print(locale.translate("example.text"))
