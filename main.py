@@ -45,6 +45,8 @@ class I18n:
         else:
             read = open(f"{self.dir}/{lang}{self.suffix}", "r")
             read = read.readlines() or fallback
+            if read != fallback:
+                read += fallback
         
         def fetch(query):
             try:
@@ -60,9 +62,7 @@ class I18n:
             res = fetch(i)
             if res:
                 return res
-
-        test = process.extractOne(text, fallback)
-        return fetch(test[0]) or Translation(text)
+        return Translation(text)
 
     def change_lang(self, language: str):
         self.lang = language
@@ -70,7 +70,7 @@ class I18n:
     def translate(self, text: str):
         return self.fetch_translations(text)
         
-# locale = I18n("locale", "en_US")
+# locale = I18n("locale", "id_ID")
 # print(locale.translate("example.text"))
 # locale.change_lang("id_ID")
 # print(locale.translate("example.text"))

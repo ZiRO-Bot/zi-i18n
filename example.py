@@ -9,14 +9,14 @@ from main import I18n
 
 # en_US.zi.lang (<lang>.zi.lang)
 # ------------------------------
-# "<!example.test: 'This is a test'>" -> example.test = "This is a test"
-# "<!example.test2: 'This also a test'>" -> example.test2 = "This also a test"
+# "<!example.test: "This is a test">" -> example.test = "This is a test"
+# "<!example.test2: "This also a test">" -> example.test2 = "This also a test"
 #
 # Dictionary
 # ----------
-# ! -> Translation
+# ! -> Translation type (Might scrap this idea)
 # example.test -> Name
-# 'This is a test' -> Translated Text
+# "This is a test" -> Translated Text
 
 class MyTimer():
     def __init__(self):
