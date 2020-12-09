@@ -5,7 +5,8 @@ import random
 
 # from fuzzywuzzy import fuzz
 # from fuzzywuzzy import process
-from main import I18n
+# from main import I18n
+from zi_i18n import I18n
 
 # en_US.zi.lang (<lang>.zi.lang)
 # ------------------------------
@@ -31,9 +32,9 @@ class MyTimer():
 
 with MyTimer():
     i18n = I18n()
-    i18n.translate("example.test")
+    print(i18n.translate("example.test"))
     i18n.change_lang("id_ID")
-    i18n.translate("example.test")
+    print(i18n.translate("example.test"))
     # i18n.change_lang("fr")
     # i18n.translate("example.test")
 

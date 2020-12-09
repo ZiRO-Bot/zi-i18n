@@ -1,8 +1,6 @@
 import os
 import re
 
-from fuzzywuzzy import fuzz, process
-
 class Translation:
     def __init__(self, name, translate=None):
         self.name = name
