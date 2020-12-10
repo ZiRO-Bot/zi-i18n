@@ -78,10 +78,11 @@ class I18n:
 
     def translate(self, text: str):
         return self.fetch_translations(text)
-
+    
+    @property
     def latency(self):
         start = time.perf_counter()
-        with self.translate("latency.test") as test:
+        with self.translate("latency.test"):
             end = time.perf_counter()
             latency = end-start
             return latency
