@@ -1,10 +1,18 @@
 import os
 import re
+import time
+
 
 class Translation:
     def __init__(self, name, translate=None):
         self.name = name
         self.translate = translate or name
+
+    def __enter__(self):
+        return self.translate
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return False
 
     def __str__(self):
         return self.translate
@@ -67,9 +75,16 @@ class I18n:
 
     def translate(self, text: str):
         return self.fetch_translations(text)
-        
-# locale = I18n("locale", "id_ID")
-# print(locale.translate("example.text"))
+
+    def latency(self):
+        start = time.perf_counter()
+        with self.translate("latency.test") as test:
+            end = time.perf_counter()
+            latency = (end-start)*1000
+            return latency
+    
+# locale = I18n("test/locale", "id_ID")
+# print(locale.latency())
 # locale.change_lang("id_ID")
 # print(locale.translate("example.text"))
 # locale.change_lang("pl")
