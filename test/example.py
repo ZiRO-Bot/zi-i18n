@@ -26,17 +26,25 @@ class MyTimer():
         return self
     def __exit__(self, exc_type, exc_val, exc_tb):
         end = time.time()
-        runtime = end - self.start
-        msg = 'The function took {time} seconds to complete'
+        runtime = (end - self.start)*1000
+        msg = 'The function took {time} ms to complete'
         print(msg.format(time=runtime))
 
-with MyTimer():
-    i18n = I18n()
-    print(i18n.translate("example.test"))
-    i18n.change_lang("id_ID")
-    print(i18n.translate("example.test"))
+# with MyTimer():
+    # i18n = I18n()
+    # print(i18n.translate("example.test"))
+    # i18n.change_lang("id_ID")
+    # print(i18n.translate("example.test"))
+    # print(i18n.latency())
     # i18n.change_lang("fr")
     # i18n.translate("example.test")
+
+i18n = I18n()
+print(i18n.translate("example.text"))
+i18n.change_lang("id_ID")
+print(i18n.translate("example.text"))
+
+
 
 # test = ["<!example.test='lmao'>"]
 
