@@ -25,6 +25,10 @@ if version.endswith(('a', 'b', 'rc')):
     except Exception:
         pass
 
+readme = ''
+with open('README.md') as f:
+    readme = f.read()
+
 setup(
     name="zi-i18n",
     version=version,
@@ -33,5 +37,7 @@ setup(
     license="GPL GNU-3.0",
     author="null2264",
     author_email="",
-    description="Experimental Internationalization",
+    description="A Experimental Internationalization",
+    long_description=readme,
+    long_description_content_type="text/markdown",
 )
