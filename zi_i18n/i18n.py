@@ -27,6 +27,7 @@ from .object import Translation
 class I18n:
     def __init__(self, directory: str = "locale", language: str = "en_US"):
         self.dir = directory or "."
+        self.def_lang = "en_US"
         self.languages = []
         self.suffix = ".zi.lang"
         files = os.listdir(self.dir)
@@ -46,17 +47,6 @@ class I18n:
             warnings.warn(f"Language '{self.lang}' Not Found")
             lang = "en_US"
 
-        fallback = open(f"{self.dir}/en_US{self.suffix}", "r")
-        fallback = fallback.readlines()
-
-        if lang == "en_US":
-            read = fallback
-        else:
-            read = open(f"{self.dir}/{lang}{self.suffix}", "r")
-            read = read.readlines() or fallback
-            if read != fallback:
-                read += fallback
-        
         def fetch(query):
             try:
                 regex = r"^<(.)(\S*): \"(.*)\">"
@@ -67,7 +57,7 @@ class I18n:
             if match and match[1] == text:
                 return Translation(match[1], match[2])
         
-        for i in read:
+        for i in self.read:
             res = fetch(i)
             if res:
                 return res
@@ -75,6 +65,19 @@ class I18n:
 
     def change_lang(self, language: str):
         self.lang = language
+
+        self.fallback = open(f"{self.dir}/{self.def_lang}{self.suffix}", "r").readlines()
+
+        if self.lang == self.def_lang:
+            self.read = self.fallback
+        else:
+            try:
+                self.read = open(f"{self.dir}/{language}{self.suffix}", "r").readlines()
+            except FileNotFoundError:
+                self.read = self.fallback
+
+        if self.read != self.fallback:
+            self.read += self.fallback
 
     def translate(self, text: str):
         return self.fetch_translations(text)
