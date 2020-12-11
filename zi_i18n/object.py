@@ -31,5 +31,8 @@ class Translation:
     def __str__(self):
         return self.translate
 
+    def format(self, *args: object, **kwargs: object):
+        return self.translate.format(*args, **kwargs)
+    
     def __repr__(self):
         return f"<!{self.name}: \"{self.translate}\">"
