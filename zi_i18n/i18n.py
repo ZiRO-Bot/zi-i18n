@@ -59,10 +59,11 @@ class I18n:
                 regex = r"^<(.)(\S*): ({(.*)})>"
                 match = re.search(regex, query)
 
+            match_res = None
             if match:
                 match_res = match.groups()
 
-            if match_res[1] == text:
+            if match_res and match_res[1] == text:
                 if match_res[0] == "!":
                     return Translation(match_res[1], match_res[2], match_res[0])
                 elif match_res[0] == "%":
