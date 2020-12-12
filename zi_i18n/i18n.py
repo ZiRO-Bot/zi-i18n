@@ -24,10 +24,13 @@ import time
 from .object import Translation
 
 
+LANG = os.getenv("LANG").split(".")[0] or "en_US"
+
+
 class I18n:
-    def __init__(self, directory: str = "locale", language: str = "en_US"):
+    def __init__(self, directory: str = "locale", language: str = LANG):
         self.dir = directory or "."
-        self.def_lang = "en_US"
+        self.def_lang = LANG or "en_US"
         self.languages = []
         self.suffix = ".zi.lang"
         files = os.listdir(self.dir)

@@ -37,7 +37,7 @@ setup(
     license="GPL GNU-3.0",
     author="null2264",
     author_email="",
-    description="A Experimental Internationalization",
+    description="A Experimental Internationalization System",
     long_description=readme,
     long_description_content_type="text/markdown",
 )
