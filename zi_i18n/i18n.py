@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with zi-i18n.  If not, see <https://www.gnu.org/licenses/>
 """
 
+import json
 import os
 import re
 import time
@@ -40,7 +41,7 @@ class I18n:
         self.translation = {}
         self.change_lang(language)
 
-    def fetch_translations(self, text: str = None):
+    def fetch_translations(self, text: str = None, count: int = None):
         if not text:
             return
         lang = self.lang
@@ -51,25 +52,49 @@ class I18n:
             lang = "en_US"
 
         def fetch(query):
-            try:
-                regex = r"^<(.)(\S*): \"(.*)\">"
-                match = re.search(regex, query).groups()
-            except AttributeError:
-                return
+            regex = r"^<(.)(\S*): \"(.*)\">"
+            match = re.search(regex, query)
 
-            if match and match[1] == text:
-                return Translation(match[1], match[2])
-        
+            if not match:
+                regex = r"^<(.)(\S*): ({(.*)})>"
+                match = re.search(regex, query)
+
+            if match:
+                match_res = match.groups()
+
+            if match_res[1] == text:
+                if match_res[0] == "!":
+                    return Translation(match_res[1], match_res[2], match_res[0])
+                elif match_res[0] == "%":
+                    pluralized = self.pluralize(match_res[2], count)
+                    if pluralized:
+                        return Translation(match_res[1], pluralized, match_res[0])
+
         for i in self.read:
             res = fetch(i)
             if res:
                 return res
-        return Translation(text)
+        return Translation(text, type="?")
+
+    def pluralize(self, text: str, count: int):
+        if count is None:
+            return None
+        _json = json.loads(text)
+        if count > 1:
+            return _json.get("many", None)
+        elif count == 1:
+            return _json.get("one", None)
+        elif count < 1:
+            return _json.get("zero", None)
+        else:
+            return None
 
     def change_lang(self, language: str):
         self.lang = language
 
-        self.fallback = open(f"{self.dir}/{self.def_lang}{self.suffix}", "r").readlines()
+        self.fallback = open(
+            f"{self.dir}/{self.def_lang}{self.suffix}", "r"
+        ).readlines()
 
         if self.lang == self.def_lang:
             self.read = self.fallback
@@ -82,13 +107,16 @@ class I18n:
         if self.read != self.fallback:
             self.read += self.fallback
 
-    def translate(self, text: str):
-        return self.fetch_translations(text)
-    
+    def translate(self, text: str, count: int = None):
+        return self.fetch_translations(text, count)
+
     @property
     def latency(self):
         start = time.perf_counter()
         with self.translate("latency.test"):
             end = time.perf_counter()
-            latency = end-start
+            latency = end - start
             return latency
+
+    # translate alias
+    t = translate

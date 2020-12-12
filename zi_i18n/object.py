@@ -18,9 +18,22 @@ along with zi-i18n.  If not, see <https://www.gnu.org/licenses/>
 """
 
 class Translation:
-    def __init__(self, name, translate=None):
+    def __init__(self, name, translate=None, type="!"):
+        """
+        Parameter
+        ---------
+        name: str
+            Name of translation
+        translation: str
+            Translated text
+        type: int
+            ! -> Regular Translation
+            % -> Pluralized Translation
+            ? -> Unknown Translation (Not exist/Missing)
+        """
         self.name = name
         self.translate = translate or name
+        self.type = type if translate else "?"
 
     def __enter__(self):
         return self
@@ -35,4 +48,4 @@ class Translation:
         return self.translate.format(*args, **kwargs)
     
     def __repr__(self):
-        return f"<!{self.name}: \"{self.translate}\">"
+        return f"<{self.type}{self.name}: \"{self.translate}\">"

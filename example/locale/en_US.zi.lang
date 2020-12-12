@@ -1,2 +1,3 @@
 <!example.text: "Test">
 <!func_example.test: "Test {} {test}">
+<%example.plural: {"zero": "L", "one": "One", "many": "Two"}>
