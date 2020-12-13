@@ -29,7 +29,7 @@ LANG = os.getenv("LANG").split(".")[0] or "en_US"
 
 
 class I18n:
-    def __init__(self, directory: str = "locale", language: str = LANG):
+    def __init__(self, directory: str = "locale", language: str = LANG, cache: bool = True):
         self.dir = directory or "."
         self.def_lang = LANG or "en_US"
         self.languages = []
@@ -38,6 +38,7 @@ class I18n:
         for f in files:
             if f.endswith(self.suffix):
                 self.languages.append(f)
+        self.cache_on = cache
         self.cache = {}
         self.change_lang(language)
 
@@ -52,7 +53,7 @@ class I18n:
             warnings.warn(f"Language '{self.lang}' Not Found")
             lang = "en_US"
         
-        if lang in self.cache and text in self.cache[lang]:
+        if self.cache_on and lang in self.cache and text in self.cache[lang]:
             cache = self.cache[lang][text]
             return Translation(text, cache["result"], cache["type"])
 
@@ -70,16 +71,18 @@ class I18n:
 
             if match_res and match_res[1] == text:
                 if match_res[0] == "!":
-                    if lang not in self.cache:
-                        self.cache[lang] = {}
-                    self.cache[lang][match_res[1]] = {"type": match_res[0], "result": match_res[2]}
+                    if self.cache_on:
+                        if lang not in self.cache:
+                            self.cache[lang] = {}
+                        self.cache[lang][match_res[1]] = {"type": match_res[0], "result": match_res[2]}
                     return Translation(match_res[1], match_res[2], match_res[0])
                 elif match_res[0] == "%":
                     pluralized = self.pluralize(match_res[2], count)
                     if pluralized:
-                        if lang not in self.cache:
-                            self.cache[lang] = {}
-                        self.cache[lang][match_res[1]] = {"type": match_res[0], "result": pluralized}
+                        if self.cache_on:
+                            if lang not in self.cache:
+                                self.cache[lang] = {}
+                            self.cache[lang][match_res[1]] = {"type": match_res[0], "result": pluralized}
                         return Translation(match_res[1], pluralized, match_res[0])
 
         for i in self.read:
@@ -102,7 +105,7 @@ class I18n:
             return None
 
     def change_lang(self, language: str, clear_cache: bool=False):
-        if clear_cache:
+        if clear_cache and self.cache_on:
             self.clear_cache(self.lang)
         self.lang = language
 
