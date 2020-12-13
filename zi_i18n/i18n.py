@@ -101,7 +101,9 @@ class I18n:
         else:
             return None
 
-    def change_lang(self, language: str):
+    def change_lang(self, language: str, clear_cache: bool=False):
+        if clear_cache:
+            self.clear_cache(self.lang)
         self.lang = language
 
         self.fallback = open(
@@ -132,3 +134,13 @@ class I18n:
 
     # translate alias
     t = translate
+
+    def clear_cache(self, language=None):
+        if not language:
+            self.cache = {}
+            return
+
+        if language not in self.cache:
+            return
+
+        self.cache[language] = {}
