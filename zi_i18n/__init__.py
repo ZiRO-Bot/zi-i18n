@@ -21,7 +21,7 @@ __title__ = 'zi-i18n'
 __author__ = 'null2264'
 __license__ = 'GPL-3.0-or-Later'
 __copyright__ = 'Copyright 2020 null2264'
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 
 from collections import namedtuple
 import logging
@@ -31,7 +31,7 @@ from .object import Translation
 
 VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel serial')
 
-version_info = VersionInfo(major=0, minor=0, micro=7, releaselevel='alpha', serial=0)
+version_info = VersionInfo(major=0, minor=0, micro=8, releaselevel='alpha', serial=0)
 
 try:
     from logging import NullHandler

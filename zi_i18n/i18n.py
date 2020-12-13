@@ -38,18 +38,23 @@ class I18n:
         for f in files:
             if f.endswith(self.suffix):
                 self.languages.append(f)
-        self.translation = {}
+        self.cache = {}
         self.change_lang(language)
 
     def fetch_translations(self, text: str = None, count: int = None):
         if not text:
             return
+
         lang = self.lang
         if self.lang + self.suffix not in self.languages:
             import warnings
 
             warnings.warn(f"Language '{self.lang}' Not Found")
             lang = "en_US"
+        
+        if lang in self.cache and text in self.cache[lang]:
+            cache = self.cache[lang][text]
+            return Translation(text, cache["result"], cache["type"])
 
         def fetch(query):
             regex = r"^<(.)(\S*): \"(.*)\">"
@@ -65,10 +70,16 @@ class I18n:
 
             if match_res and match_res[1] == text:
                 if match_res[0] == "!":
+                    if lang not in self.cache:
+                        self.cache[lang] = {}
+                    self.cache[lang][match_res[1]] = {"type": match_res[0], "result": match_res[2]}
                     return Translation(match_res[1], match_res[2], match_res[0])
                 elif match_res[0] == "%":
                     pluralized = self.pluralize(match_res[2], count)
                     if pluralized:
+                        if lang not in self.cache:
+                            self.cache[lang] = {}
+                        self.cache[lang][match_res[1]] = {"type": match_res[0], "result": pluralized}
                         return Translation(match_res[1], pluralized, match_res[0])
 
         for i in self.read:
